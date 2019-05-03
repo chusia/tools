@@ -1,0 +1,49 @@
+<html>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function change() {
+            var data = "<br />";
+            var colName = [];
+            var tmpName = $('#descTable').val().split("\n")
+            for (ele of tmpName) {
+                if (ele.indexOf("NUMBER") != -1) {
+                    if (ele.match(/\(.*?\)/g) != null) {
+                        var kako = ele.match(/\(.*?\)/g)[0]
+                    } else {
+                        var kako = null;
+                    }
+                    if (kako == null) { //int
+                        ele = ele.split("NUMBER").shift() + "integer";
+                    } else if (kako.indexOf(",") == -1) { //int
+                        ele = ele.split(/\(.*?\)/g).shift();
+                        ele = ele.replace("NUMBER", "integer");
+                    } else {//double
+                        ele = ele.split(/\(.*?\)/g).shift();
+                        ele = ele.replace("NUMBER", "double precision");
+                    }
+                } else if (ele.indexOf("VARCHAR2") != -1) {
+                    ele = ele.split(")").shift() + ")";
+                    ele = ele.replace("VARCHAR2", "character varying");
+                } else {
+                    ele = "注意特殊格式"
+                }
+                if (ele != "") {
+                    colName.push(ele)
+                }
+            }
+            data = data + "CREATE FOREIGN TABLE 表名稱 (<br>" + colName.join(",<br>") + "<br>) SERVER oradb OPTIONS (schema '資料庫名稱CGBM', table 'ora表名稱')"; 
+            console.log(colName)
+            $("#output").html(data);
+        }
+    </script>
+    <label>
+        Oracle Table Desc
+    </label><br />
+    <textarea rows="8" cols="50" id='descTable'></textarea><br />
+    <button onclick='change()'>轉換</button>
+    <div id='output'></div>
+</body>
+
+</html>
